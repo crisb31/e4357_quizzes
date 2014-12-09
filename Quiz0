@@ -1,0 +1,23 @@
+A.	DIRECTIONS/QUESTIONS: 
+    1. Search: "firmware" at Google:
+        https://www.google.com/search?sourceid=chrome-psyapi2&ion=1&espv=2&ie=UTF-8&q=firmware
+  
+    2. Search results are returned within 0.36 seconds.
+       What is happening in the background?
+       
+B.	ANSWERS/LESSONS LEARNED:
+    1.	What is happening in the background when doing a Google search for a subject matter, “firmware,” for example:
+
+        Since there are search results within less than a second, for this to be done, there is already information stored in         Google’s database and shown on screen are the website links and short description for each. 
+        I believe how Google “search” [program] works is by the following, including background activities:
+        
+        a.	First, Google has servers that have information, such as website links and information, ready to be returned and             shown on the search screen when requested, which is the program’s task.
+        b.	Google’s main page itself is a program that remains idle until a user types in character(s) in the search area,              press “Enter/Return” key, clicks “Search” or clicks one of the clickable entities on the page.      
+        c.	Doing key return or a click on the main page triggers a start of another program which is internet-based.
+        d.	Since the program needs to access Google’s database or server to be able to get the information and be displayed             on the user’s screen, the request needs to go through different protocols and layers to get to the server and                back again to the user screen for the information.
+        e.	From what I know, there are layers of abstraction/protocol, based on OSI model, the internet request goes through             from the Google’s main internet website application program where the user types the word “firmware,” all the way             down to the cabling or physical connection. The same layers are on the other end, where the information gets                 receives and goes through in the reverse order.
+        f.	After the user types the characters for searching, they are translated into machine code and “padded” with header             information before being transferred to the subsequent layer. The last layer being the physical cabling or                   connection.
+        g.	On the other end or the receiving end is the server, where the coded information gets “de-padded” in reverse                 order until the last layer, the application program to process the search request, de-pads for the last time,                decodes the request, and retrieves the necessary information to be sent back to the requesting program, the                  user’s.
+        h.	The requested information goes through the same process of being coded, then padded through all the different                layers, and sent to the internet.
+        i.	The receiving end this time is the user, where the coded requested information gets “de-padded” in reverse order             until the last layer, the application program to display the search results, de-pads the information for the last             time, decodes the information, then displays on the user’s screen the results.
+        
