@@ -1,0 +1,244 @@
+A.	DIRECTIONS/QUESTIONS: 
+
+BEGIN
+--------------------------------------------------------------------
+Q1: Implement the following inline functions: (testcases)
+inline int CircularBufferIsFull(CircularBuffer* que) 
+inline int CircularBufferIsEmpty(CircularBuffer* que) 
+--------------------------------------------------------------------
+Q2: How to compute "Interrupt Latency"?
+--------------------------------------------------------------------
+Q3: Serial pc(USBTX, USBRX); // tx, rx 
+    What API (function) do you use to change the baud rate?
+--------------------------------------------------------------------
+Q4: How many bit(s) does TDO have? Is TDO an input or output type? (Ref: JTAG Pins) 
+--------------------------------------------------------------------
+Q5:
+What is the address of ledArr[0]? 
+What is the address of ch? 
+
+/* 
+* Enter a hex number [0-9a-fA-F]; Decode it in 4-bit binary format and display them on 4 on board leds. 
+*/ 
+
+#include "mbed.h" 
+
+Serial pc(USBTX, USBRX); // tx, rx 
+DigitalOut ledArr[4] = {DigitalOut(LED1), DigitalOut(LED2), DigitalOut(LED3), DigitalOut(LED4)}; 
+void DisplayLed(int ch) 
+{ 
+	int i=0;
+
+	if (ch>='0' && ch<='9')
+		ch-='0';
+	else if (ch>='A' && ch<='F') {
+		ch-='A';
+		ch+=10;
+	} else if (ch>='a' && ch<='f') {
+		ch-='a';
+		ch+=10;
+	} else
+		ch=0;
+
+	for (i=0; i<4; i++) { 
+		if(ch& (1<<i))
+			ledArr[i] = 1; 
+		else
+			ledArr[i] = 0;
+	} 
+} 
+
+int main(void) { 
+	int ch; 
+	pc.baud(9600); 
+	pc.printf("\r\nHello World!"); 
+	while(1) { 
+		pc.printf("\r\nEnter:"); 
+		ch = pc.getc(); 
+		pc.putc(ch); 
+		DisplayLed(ch); 
+	} 
+}
+--------------------------------------------------------------------
+END
+
+
+-----------------------------------------------------------------------------------------------------
+
+B.	IMPLEMENTATION:
+
+--------------------------------------------------------------------
+Q1.	Implementation of inline int CircularBufferIsFull(CircularBuffer* que) is performed as a check before doing an enque         operations. Enque is not performed if the buffer is full. The code from my homework is used for implementation.
+	
+	  Implementation of inline int CircularBufferIsEmpty(CircularBuffer* que) is performed as a check for deque operations.        Deque is not done if the buffer is empty. The code from my homework is used for implementation.
+	  
+	************ CircularBufferIsFull(CircularBuffer* que)  **********
+	//CircularBufferIsFull(CircularBuffer* que) function definition:
+
+	inline int CircularBufferIsFull(CircularBuffer* que) 
+	{ // NOTE: Value of 0xff is considered empty.
+    		    if ((que->keys[que->writePointer]!=0xff)&&(que->writePointer==que->readPointer)) //FULL   
+        				    return 1;
+    		    else
+        				    return 0;
+	}
+
+	// Function call to CircularBufferIsFull(CircularBuffer* que) in
+	// CircularBufferEnque(CircularBuffer* que, int k)
+	inline int CircularBufferEnque(CircularBuffer* que, KeyType k) 
+	{ 
+    			 if (CircularBufferIsFull(que)) //FULL    
+    			 {
+        		  		   pc.printf("\r\n\tNOTE: An attempt was made to write to a FULL Circular Buffer.");
+    		   }
+    		   else
+    		   {
+        				   que->keys[que->writePointer]=k&(que->mask);
+        				   pc.printf("\r\n\tEnqued value to writePointer index %d = 0x%x",\
+                    	que->writePointer,que->keys[que->writePointer]);
+        				   que->writePointer=((que->writePointer)+1)%(que->size);
+    			  }
+    				CircularBufferPrint (que);
+    		    return 0;    
+	}
+
+	//test case in main() for CircularBufferIsEmpty()
+	…
+	#endif
+	
+	CircularBuffer circbuff;
+	KeyType value;
+
+	int main() 
+	{
+    			//enque demo
+    			//init for enque
+    			pc.printf("\r\n\tCircular Buffer Enque Implementation:\n");
+    			pc.printf("\r\n\tInit...\n");
+    			circbuff.writePointer=0;
+    			circbuff.readPointer=0;
+    			circbuff.size=4;
+    			circbuff.mask=0xff;
+    			for(int j=0;j<(circbuff.size);j++)
+        			circbuff.keys[j]=0xff;
+    			CircularBufferPrint (&circbuff);
+    			//enque
+    			for(int k=0;k<(circbuff.size);k++)
+    			{
+        				 if (k==0) CircularBufferEnque (&circbuff, k+10);
+        				 if (k==1) CircularBufferEnque (&circbuff, k+5);
+        				 if (k==2) CircularBufferEnque (&circbuff, k*2);
+        				 if (k==3) CircularBufferEnque (&circbuff, k*10);
+    			}
+    			//test for full buffer
+    			CircularBufferEnque (&circbuff, 0x20);
+    			while(1) {
+    			}
+	}
+	//CircularBufferIsFull() sample implementation run:
+ 
+	************ CircularBufferIsEmpty(CircularBuffer* que)  **********
+	//CircularBufferIsEmpty(CircularBuffer* que) function definition:
+	inline int CircularBufferIsEmpty(CircularBuffer* que)
+	{ // NOTE: Value of 0xff is considered empty.
+   		    if ((que->keys[que->readPointer]==0xff)&&(que->readPointer==que->writePointer)) //EMPTY
+       				     return 1;
+    		    else
+       		         return 0;
+	}
+	
+	// Function call to CircularBufferIsEmpty(CircularBuffer* que) in
+	// CircularBufferDeque(CircularBuffer* que, int * pK)
+	inline int CircularBufferDeque(CircularBuffer* que, KeyType* pK) 
+	{
+    				if (CircularBufferIsEmpty(que)) //EMPTY    
+    				{
+        				     pc.printf("\r\n\n\tNOTE: An attempt was made to read from an EMPTY Circular Buffer..");
+    				}
+    				else
+    				{
+        				     *pK=(que->keys[que->readPointer])&(que->mask);
+         	     	     que->keys[que->readPointer]=0xff;//update readPointer value to empty
+        		         pc.printf("\r\n\tDequed value from readPointer index %d = 0x%x",que->readPointer,*pK);
+        			       que->readPointer=((que->readPointer)+1)%(que->size); //update readPointer
+    				}
+    				CircularBufferPrint (que); //defined somewhere
+    				return 0;
+	}
+
+	//test case in main() for CircularBufferIsEmpty()
+	…
+	#endif
+
+	CircularBuffer circbuff;
+	KeyType value;
+	int main() 
+	{
+    			//deque demo
+    			//init for deque
+    			pc.printf("\r\n\tCircular Buffer Deque Demo:\n");
+   	  	  pc.printf("\r\n\tInit...\n");
+    			circbuff.writePointer=0;
+    			circbuff.readPointer=0;
+    			circbuff.size=4;
+    			circbuff.mask=0xff;
+    			for(int j=0;j<(circbuff.size);j++)
+        				  circbuff.keys[j]=(j*10)&0xff;
+    			CircularBufferPrint (&circbuff);
+    			//deque
+    			KeyType val[circbuff.size];
+    			for(int k=0;k<(circbuff.size);k++)
+        				  CircularBufferDeque (&circbuff, &val[k]);
+    			//test for full buffer
+    			CircularBufferDeque (&circbuff, &value);
+    			for(int k=0;k<(circbuff.size);k++)
+        			    pc.printf("\r\n\tRetrieved value[%d]= 0x%x",k,val[k]);
+
+    			while(1) {
+    			}
+	}
+	//CircularBufferIsEmpty() sample implementation run:
+ 
+--------------------------------------------------------------------
+Q2.	How to compute "Interrupt Latency"?
+
+First, interrupt latency is the time it takes for a responding system to start acting on an interrupt. In the case of an embedded systems, it is the time from when an interrupt is detected to the start of a routine that services that interrupt. In quantifying interrupt latency, it can be computed by measuring time delays. One method is in a lab environment by assigning rising or falling edge to indicate an interrupt has been raised. In turn, the system will have another signal’s rising or falling edge (first signal’s edge) to indicate the system has acknowledged the interrupt (second signal’s edge) and will start servicing the interrupt. The time difference between the interrupt (first signal’s edge) and the acknowledgement (second signal’s edge) is the latency which can be measured/computed through an oscilloscope. 
+Another way interrupt latency can be computed is through use of datalogging in automated testing where a real-time counter (RTC) or time stamp is included in a program that keeps track of interrupts, acknowledgements and service routines. This program should record the times in the datalogs by using RTC or timestamp when interrupts are raised and when the system acknowledges those interrupts at the start of the interrupt service routines. Post-processing of the datalogs should be performed further to extract and compute the time difference of two times.
+
+--------------------------------------------------------------------
+Q3.	Serial pc(USBTX, USBRX); // tx, rx
+	  The API function to use to change the baud rate is “baud.”
+
+--------------------------------------------------------------------
+Q4.	How many bit(s) does TDO have? Is TDO an input or output type? (Ref: JTAG Pins)
+
+    TDO, as in JTAG, has one bit. TDO is both an output and an input. In JTAG, since devices with JTAG or boundary scan cells     are connected in series, one device’s TDO as an output is input to another device’s TDI pin.
+
+--------------------------------------------------------------------
+Q5.	What is the address of ledArr[0]? Answer: 0x1000,015c
+
+	  What is the address of ch? Answer: 0x1000,7ffc
+	  
+	  This is a program that decodes one of the characters [0-9a-fA-F] and displays its binary format equivalent using LEDs 1-4     on the LPC1768 mbed board.
+
+	  Character	  LED1,LED2,LED3,LED4 
+			          (0=LEDoff,1=LEDon)
+    ---------   -------------------	
+          0	    0000
+          1 	  0001
+          2 	  0010
+          3 	  0011
+          4	    0100
+          5	    0101
+          6	    0110
+          7	    0111
+          8	    1000
+          9	    1001
+          a/A	  1010
+          b/B	  1011
+          c/C	  1100
+          d/D	  1101
+          e/E	  1110
+          f/F 	1111		
+          
+--------------------------------------------------------------------
