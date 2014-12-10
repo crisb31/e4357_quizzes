@@ -1,0 +1,191 @@
+A.	DIRECTIONS/QUESTIONS:
+BEGIN
+
+--------------------------------------------------------------------
+Q1: Is there any compile error with the following code (if any)?
+
+	unsigned int Arr[16];
+	3[Arr] = 7; 
+Explain:
+
+--------------------------------------------------------------------
+Q2: What is the difference between the following 3 statements? 
+
+const int * px; 
+int const * px; 
+int * const px; 
+
+Is there any compile error for the following cases?
+case1: 
+int x = 13; 
+const int * px; 
+px = & x; 
+
+case 2: 
+int x = 13; 
+int const * px; 
+px = & x; 
+
+case 3: 
+int x = 13; 
+int * const px; 
+px = & x; 
+
+Explain:
+
+--------------------------------------------------------------------
+Q3: Write a function to set or clear ith bit of a 32-bit register. 
+	Where ith (0-based) := {0, 1, 2, …, 31 } 
+void reg_set(volatile unsigned int * pReg, int ith) 
+{ 
+} 
+
+void reg_clear(volatile unsigned int * pReg, int ith) 
+{ 
+} 
+
+--------------------------------------------------------------------
+Q4: Write a swap function in C.
+void swap(unsigned int * px, unsigned int *py) { 
+
+} 
+
+--------------------------------------------------------------------
+Q5:	What is the output of the following code? (Given: sizeof(unsigned int) is 4) Page 34 
+
+unsigned int Arr[16]; 
+unsigned int a0 = (unsigned int) &Arr[0]; 
+unsigned int a3 = (unsigned int) &Arr[3]; 
+printf(“%d\n”, a3 – a0); 
+
+END
+
+----------------------------------------------------------------------------------------------------------------------------
+
+B.	IMPLEMENTATION:
+
+-------------------------------------------------------------------------------
+Q1.   unsigned int Arr[16];
+	    3[Arr]=7;
+		
+		  The statements above will have no compile error. The array name, Arr, is
+      declared in the first line, which makes ‘Arr’ a pointer. Using or referencing ‘Arr’ after its declaration is fine.
+
+	    The second line may seem to introduce a compile error but doesn’t. There will be no compile error as long as Arr is          declared previously as an array or a pointer. Arr itself is referenced as the base address of the array.
+
+--------------------------------------------------------------------------------
+Q2.   const int * px; //px points to a variable int of type constant
+		  int const * px; //px points to a constant of type int
+	    int * const px; //constant px points to a variable of type int
+
+	Case1:
+	int x=13;   const int * px;   px=&x;
+	Case1 will not have compile errors. ‘px=&x’ assigns to px the address of x. The address is an int of type constant, and that address contains the value 13.
+	
+	Case2:
+	int x=13;   int const * px;   px=&x;
+	Case2 will not have compile errors. ‘px=&x’ assigns to px the address of x. The address is a constant of type int, and that address contains the value 13.
+
+	Case3:
+	int x=13;   int * const px;   px=&x;
+	Case3 will have compile error, unless px is initialized to right in the declaration statement; ie., int * const px=&x; 
+
+-----------------------------------------------------------------------------------
+Q3.	  Write a function to set or clear ith bit of a 32-bit register. 
+		  Where ith (0-based) := {0, 1, 2, …, 31 }
+		
+		  void reg_set(volatile unsigned int * pReg, int kth)
+	  	{		
+	 		  *pReg=(((1<<ith)|(*pReg)))&(0xffffffff);
+		  }
+
+		  //Testcase for reg_set():
+		  Serial pc(USBTX, USBRX); // tx, rx
+		  void reg_set(volatile unsigned int *, int);
+		  int main() 
+		  {
+	  		  volatile unsigned int tempReg;
+     		  int set_ith, start, end;
+    			tempReg=0x0;
+    			pc.printf("\r\nSTART setting bits...\n");  
+    			for(set_ith=0;set_ith<=31;set_ith++)
+    			{
+        	    if (set_ith==0) pc.printf("\r\n");
+      	      pc.printf("\r\nIn main after fcnt call: After setting bit %d in 0x%x...",set_ith,tempReg);
+        	    reg_set(&tempReg, set_ith);
+        	    pc.printf("pReg= 0x%x",(tempReg)&(0xffffffff));
+        	    if (set_ith==31) pc.printf("\r\n");
+    			}	
+    			pc.printf("\r\n...END\n");  
+			    while(1)
+			    {
+			    }
+		    }
+
+        void reg_clear(volatile unsigned int * pReg, int kth)
+		    {		
+      		  *pReg=( ((0xffffFFFF>>(32-kth))|(0xffffFFFF<<(kth+1))) & (*pReg) )&(0xffffFFFF);	
+		    }
+		
+        //Testcase for reg_clear():
+		    Serial pc(USBTX, USBRX); // tx, rx
+		    void reg_clear(volatile unsigned int *, int);
+		    int main() 
+		    {
+	  		    volatile unsigned int tempReg;
+     		    int clear_ith, start, end;
+    			  tempReg=0xffffFFFF;
+    			  pc.printf("\r\nSTART clearing bits...\n");  
+    			  for(clear_ith=0; clear_ith<=31; clear_ith++)
+    			  {
+                if (clear_ith==0) pc.printf("\r\n");
+                pc.printf("\r\nIn main after fcnt call: After clearing bit %d in 0x%x...",clear_ith,tempReg);
+                reg_clear(&tempReg, clear_ith);
+                pc.printf("pReg= 0x%x",(tempReg)&(0xffffffff));
+                if (clear_ith==31) pc.printf("\r\n");
+
+    			  }	
+    			  pc.printf("\r\n...END\n");  
+			      while(1)
+		  	    {
+			      }
+		    }
+		
+----------------------------------------------------------------------------------
+Q4.	  Write a swap function in C.
+	    
+	    void swap(unsigned int * px, unsigned int *py) 
+	    {
+    	   unsigned int tempval=*px;
+    	   *px=*py;
+    	   *py=tempval;
+	    }
+
+	    //Testcase for swap()
+	    Serial pc(USBTX, USBRX); // tx, rx
+	    void swap(unsigned int *, unsigned int *);
+	    int main() 
+	    {
+    	   unsigned int valx, valy;
+    	   pc.printf("\r\nSTART swap...\n");  
+    	   valx=0xa; valy=0xe;
+    	   pc.printf("\r\nInitially: x=%d, y=%d\n",valx,valy);
+    	   swap(&valx,&valy);
+    	   pc.printf("\r\nAfter swap: x=%d, y=%d\n",valx,valy);
+    	   pc.printf("\r\n...END\n");  
+    	   while(1) 
+    	   {
+    	   }
+	    }
+
+-----------------------------------------------------------------------------------
+Q5.   What is the output of the following code? (Given: sizeof(unsigned int) is 4)?
+	    unsigned int Arr[16];
+	    unsigned int a0 = (unsigned int) &Arr[0];
+      unsigned int a3 = (unsigned int) &Arr[3];
+	    printf(“%d\n”, a3 – a0);
+
+	    Answer: 12.
+	
+	    a0 and a3 are the addresses for Arr’s 0th and 3rd elements which are memory locations, and each memory location has 4        bytes. Since a3 is 3 memory addresses away from a0 and each address has 4 bytes, 
+	    the answer will be “3addresses*4bytes/address” = 12bytes.
