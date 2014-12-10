@@ -1,0 +1,45 @@
+A.	DIRECTIONS/QUESTIONS:
+
+BEGIN
+--------------------------------------------------------------------
+Q1: How many microcontrollers in the mbed LPC1768 board?
+--------------------------------------------------------------------
+Q2: What is the size (in GB) of the Flash Memory ("USB Dsik") of the LPC1768?
+--------------------------------------------------------------------
+Q3: Name 3 functions (or features) that mbed USB cable provided:
+1.
+2.
+3.
+--------------------------------------------------------------------
+Q4: What is the name of the Ethernet PHY chip in the mbed board (LPC1768)?
+--------------------------------------------------------------------
+Q5: Reference LPC17xx_UM10360.pdf (Chapter 2)
+    What are the GPIO address window?
+END
+
+----------------------------------------------------------------------------------------------------------------
+
+B. IMPLEMENTATION:
+
+--------------------------------------------------------------------
+Q1.  There are 2 microcontrollers in the mbed LPC1768 board: (1) the LPC1768 microcontroller containing the Cortex-M3 CPU, and (2) the USB-interface microcontroller.
+--------------------------------------------------------------------
+Q2. The size of the Flash Memory of the LPC1768 is 16Mb or 2MB. 
+In GB size:
+1MB has 2^20B and 1GB has 2^30B. 
+Number of MB in 1 GB is 2^30/2^20 = 2^10MB/GB or 1024MB/GB. 
+So, number of GB of USB Disk Flash Memory is 2^1*MB*[1GB)/(2^10MB)]
+= 2MB * (1GB/1024MB)
+= 0.00195 GB [USB Disk Size of LPC1768 Flash Memory]. 
+--------------------------------------------------------------------
+Q3. 3 Functions or Features of the mbed USB cable:
+1.	To download the .bin program to the mbed board.
+2.	To power the mbed board.
+3.	To create files in the USB Disk for reading and writing when doing filesystem application using the mbed board.
+--------------------------------------------------------------------
+Q4. The name of the Ethernet PHY chip in the LPC1768 is Texas Instruments’ DP83848J PHYTER.
+--------------------------------------------------------------------
+Q5. The GPIO address windows are:
+	0x2009,c000–0x2009,c09c and parts of 0x4002,8080-0x4002,b004
+--------------------------------------------------------------------
+
