@@ -1,0 +1,53 @@
+A.	DIRECTIONS/QUESTIONS:
+
+BEGIN
+--------------------------------------------------------------------
+1. What is the _mask value for LED1? 
+   What is the address of FIOSET?
+--------------------------------------------------------------------
+2. What is the RS232 Frame?
+--------------------------------------------------------------------
+3. Explain the start and stop conditions of i2c?
+--------------------------------------------------------------------
+4. Is the i2c acknowledge SDA LOW or SDA HIGH?
+--------------------------------------------------------------------
+5. Tell me about the DDR3 write leveling Concept in one sentence.  
+   (ref: slides)
+END
+
+------------------------------------------------------------------------------------------------------------------------
+
+B. IMPLEMENTATION:
+
+--------------------------------------------------------------------
+1.	LED1 is connected to port1-pin18.
+    -	The mask value for LED1 is 0xFB for FIO1MASK2 or mask value of 0xFFFB for FIO1MASKU, which corresponds to bit-2 being         low, in address 0x2009,c032.
+    -	The address of FIOSET is 0x2009,c03a.
+--------------------------------------------------------------------
+2.	The RS232 frame is a 10-bit or 11-bit frame (with parity bit).
+
+    -	10-bit Frame:
+      *	Bit1: Start bit with opposite polarity of the idle state.
+      *	Bit2~Bit9: 8 Data bits.
+      *	Bit10: Stop bit with same polarity of the idle state.
+
+    -	11-bit Frame:
+      *	Bit1: Start bit with opposite polarity of the idle state.
+      *	Bit2~Bit9: 8 Data bits.
+      *	Bit10: Parity bit.
+      *	Bit11: Stop bit with same polarity of the idle state.
+--------------------------------------------------------------------
+3.  The START conditions of i2c are (a) high-to-low transition of SDA, and (2) SCL is high. The reason for this is both SDA      and SCL lines have pullup resistors that make them logic-high all the time when the lines are not being accessed. Also,      i2c devices should connect to these lines for i2c communications. Any device that wants to communicate with the other        device(s) connected to the i2c bus pulls down the SDA line (high-to-low transition) while SCL is high, and start             communicating from there. Any device initiating an i2c communication is a bus master, and any addressed device connected     on the i2c bus is a slave.
+    
+    The STOP conditions are when all transactions are completed, the master device that has initiated the bus transaction        releases the SDA line to high, thus (a) low-to-high transition of the SDA, while (2) SCL is high.
+--------------------------------------------------------------------
+4.  The i2c acknowledge is SDA LOW. This is so because any device (say device1) that is done transmitting and waiting for an     acknowledgement from another device (say device2) it wishes to communicate with, releases the SDA line, putting SDA high     to wait for the acknowledgement from device2. If device2 is connected on the i2c bus, it will acknowledge to device1 by      pulling the SDA line low. Therefore, i2c acknowledge is SDA LOW.
+--------------------------------------------------------------------
+5.	DDR3 write-leveling concept is the process by which DDR3 makes sure all its memory cells have even distribution of erases     and writes to prolong the life of the cells.
+
+    CORRECTION: The sentence above is for NAND's wear-leveling (got confused). My new one-sentence description of DDR3 
+                write-leveling is below. Thank you, Sheng-Liang.
+    
+    DDR3 write-leveling  is a memory controller mechanism that adjusts internal data strobe done on per byte or per strobe       basis to compensate for unbalanced or mismatched loading on the board during write operations resulting from routing         and other delays.
+--------------------------------------------------------------------
+
